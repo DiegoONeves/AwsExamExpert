@@ -1,0 +1,70 @@
+﻿@model IEnumerable<AwsExamExpert.Models.Simulado>
+
+@{
+    ViewData["Title"] = "Resultados dos Simulados";
+}
+
+<h1>Resultados dos Simulados</h1>
+
+<p>
+    <a asp-action="NovaProva">Nova Prova</a>
+</p>
+<table class="table table-bordered table-hover">
+    <thead class="text-center">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DataDoSimulado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Prova)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Situacao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PercentualFormatado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PontosConquistados)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PontuacaoMedia)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QuantidadeDeQuestoes)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataDoSimulado)
+            </td>
+            <td scope="row">
+                @Html.DisplayFor(modelItem => item.Prova.Descricao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Situacao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PercentualFormatado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PontosConquistados)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PontuacaoMedia)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QuantidadeDeQuestoes)
+            </td>
+            <td>
+                @Html.ActionLink("Resultado", "Resultado", "Simulado", new { codigoSimulado = item.CodigoSimulado }) |
+                @Html.ActionLink("Excluir", "Excluir", "Simulado", new { codigoSimulado = item.CodigoSimulado })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,42 @@
+﻿@model AwsExamExpert.Models.Simulado
+
+@{
+    ViewData["Title"] = "Iniciar";
+}
+
+<h1>Nova Prova</h1>
+
+<h4>Iniciar</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Iniciar">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="CodigoUsuario" type="hidden" />
+            <div class="form-group">
+                <label asp-for="CodigoProva" class="control-label"></label>
+                <select id="CodigoProva" asp-for="CodigoProva" class="form-control" asp-items="@Model.Provas">
+                    <option selected value="">Selecione o simulado de prova</option>
+                </select>
+                <span asp-validation-for="CodigoProva" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuantidadeDeQuestoes" class="control-label"></label>
+                <input asp-for="QuantidadeDeQuestoes" class="form-control" />
+                <span asp-validation-for="QuantidadeDeQuestoes" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Iniciar" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Resultados">Resultados</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

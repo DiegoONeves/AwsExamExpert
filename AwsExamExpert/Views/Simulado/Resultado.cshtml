@@ -1,0 +1,96 @@
+﻿@model AwsExamExpert.Models.Simulado
+
+@{
+    ViewData["Title"] = $"Resultado da prova {Model.Prova.Descricao}";
+}
+
+<div class="row">
+    <h1>Prova @Model.Prova.Descricao</h1>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.Usuario)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.Usuario.Nome)
+        </dd>
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.DataDoSimulado)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.DataDoSimulado)
+        </dd>
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.QuantidadeDeQuestoes)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.QuantidadeDeQuestoes)
+        </dd>
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.PontosConquistados)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.PontosConquistados)
+        </dd>
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.PercentualFormatado)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.PercentualFormatado)
+        </dd>
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.PontuacaoMedia)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.PontuacaoMedia)
+        </dd>
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.Situacao)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.Situacao)
+        </dd>
+        <dt class="col-sm-4">
+            @Html.DisplayNameFor(model => model.TempoDeProvaEmMinutos)
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.TempoDeProvaEmMinutos)
+        </dd>
+    </dl>
+</div>
+<div class="row">
+    <h3>Gabarito da Prova</h3>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Nº</th>
+                <th scope="col">Resultado</th>
+                <th scope="col">Pergunta</th>
+                <th scope="col">Resposta(s)</th>
+                <th scope="col">Respondida(s)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Gabarito.Count; i++)
+            {
+                <tr>
+                    <th scope="row">@Model.Gabarito[i].NumeroQuestao</th>
+                    @if (Model.Gabarito[i].Resultado == "Correta")
+                    {
+                        <td scope="row">@Model.Gabarito[i].Resultado</td>
+                    }
+                    else
+                    {
+                        <th scope="row" style="color: orangered">@Model.Gabarito[i].Resultado</th>
+                    }
+                    <td>@Model.Gabarito[i].Texto</td>
+                    <td>@Model.Gabarito[i].Resposta</td>
+                    <td>@Model.Gabarito[i].Respondida</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div>
+    <a asp-action="Resultados">Meus resultados</a>
+</div>

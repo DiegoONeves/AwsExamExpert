@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Simulados para Certificações</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/toastr/toastr.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><h4 class="text-white"><strong class="text-warning">AWS</strong>ExamExpert</h4></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-warning" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-warning" asp-area="" asp-controller="Home" asp-action="Sobre">Sobre</a>
+                        </li>
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-warning" asp-area="" asp-controller="Home" asp-action="Login">Entrar</a>
+                            </li>
+                        }
+                        @if (User.Identity.IsAuthenticated)
+                        {
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-warning dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Usuários
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Usuario" asp-action="Editar">Editar perfil</a>
+                                    @if (User.IsInRole("Administrador"))
+                                    {
+                                        <a class="dropdown-item" asp-area="" asp-controller="Usuario" asp-action="Index">Usuários</a>
+                                    }
+                                </div>
+                            </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-warning dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Simulados
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Simulado" asp-action="NovaProva">Nova prova</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Simulado" asp-action="Resultados">Resultados</a>
+
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-warning" asp-area="" asp-controller="Simulado" asp-action="Resultados">Ranking</a>
+                            </li>
+                            @if (User.IsInRole("Administrador"))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link text-warning dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Administração
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                        <a class="dropdown-item" asp-area="" asp-controller="Pergunta" asp-action="Perguntas"></a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Pergunta" asp-action="Index">Trocar prova de pergunta</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Pergunta" asp-action="Index">Trocar domínio de pergunta</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Prova" asp-action="Index">Provas</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Dominio" asp-action="Index">Domínios</a>
+                                    </div>
+                                </li>
+                            }
+                            <li class="nav-item">
+                                <a class="nav-link text-warning" asp-area="" asp-controller="Home" asp-action="Sair">Sair</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy;  @DateTime.Now.Year - Simulado para Certificações - <a asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/toastr/toastr.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            toastr.success('@TempData["Success"]');
+        </script>
+    }
+    @if (TempData["Warning"] != null)
+    {
+        <script>
+            toastr.warning('@TempData["Warning"]');
+        </script>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <script>
+            toastr.error('@TempData["Error"]');
+        </script>
+    }
+    @if (TempData["Info"] != null)
+    {
+        <script>
+            toastr.info('@TempData["Info"]');
+        </script>
+    }
+</body>
+</html>

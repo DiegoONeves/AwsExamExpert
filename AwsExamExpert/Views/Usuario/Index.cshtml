@@ -1,0 +1,70 @@
+﻿@model IEnumerable<AwsExamExpert.Models.Usuario>
+
+@{
+    ViewData["Title"] = "Usuários Cadastrados";
+}
+
+<h1>Usuários Cadastrados</h1>
+
+<p>
+    <a asp-action="Cadastrar">Cadastrar Novo Usuário</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CodigoUsuario)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WhatsApp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Administrador)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataDeCadastro)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Liberado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataDeVencimento)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CodigoUsuario)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nome)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WhatsApp)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Administrador)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DataDeCadastro)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Liberado)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DataDeVencimento)
+                </td>
+                <td>
+                    @Html.ActionLink("Editar", "Editar", new { codigoUsuario = item.CodigoUsuario })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

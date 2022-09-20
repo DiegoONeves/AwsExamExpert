@@ -1,0 +1,69 @@
+﻿@model AwsExamExpert.Models.Questao
+
+@{
+    ViewData["Title"] = $"Questão {@Model.Numero}";
+}
+
+
+<h4>Questão @Model.Numero de @Model.QuantidadeDeQuestoes</h4>
+<h6>@Model.Pergunta.Dominio.Descricao</h6>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Responder">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="CodigoQuestao" type="hidden" />
+            <input asp-for="CodigoSimulado" type="hidden" />
+            <input asp-for="Numero" type="hidden" />
+            <input asp-for="CodigoPergunta" type="hidden" />
+            <input type="hidden" asp-for="@Model.Pergunta.MultiplaEscolha" />
+            <input type="hidden" asp-for="@Model.Pergunta.CodigoPergunta" />
+            <input type="hidden" asp-for="@Model.Pergunta.Ativo" />
+
+            <label>@Model.Pergunta.Texto</label>
+            <br />
+
+            @if (Model.Pergunta.MultiplaEscolha)
+            {
+                @for (var i = 0; i < Model.Pergunta.Respostas.Count; i++)
+                {
+                    <input type="checkbox" asp-for="@Model.Pergunta.Respostas[i].Respondida" />
+                    <label asp-for="@Model.Pergunta.Respostas[i].Respondida">@Model.Pergunta.Respostas[i].Ordem: @Model.Pergunta.Respostas[i].Texto</label>
+                    <input type="hidden" asp-for="@Model.Pergunta.Respostas[i].CodigoResposta" />
+                    <input type="hidden" asp-for="@Model.Pergunta.Respostas[i].Texto" />
+                    <br />
+                }
+            }
+            else
+            {
+                @foreach (var item in Model.Pergunta.Respostas)
+                {
+                    <input asp-for="CodigoRespostaUsada" value="@item.CodigoResposta" type="radio" />
+                    <label asp-for="@item.CodigoResposta">@item.Ordem: @item.Texto</label>
+                    <input asp-for="@item.CodigoResposta" type="hidden" />
+                    <br />
+                }
+            }
+
+
+        <div class="form-group">
+            <input type="submit" value="Responder" class="btn btn-primary" />
+            <a href="/Simulado/Excluir?codigoSimulado=@Model.CodigoSimulado">
+                <input type="button" value="Desistir" class="btn btn-danger" />
+            </a>
+            <a href="/Simulado/@Model.CodigoSimulado/Questao/@(Model.Numero == 1?1:Model.Numero - 1)">
+                <input type="button" value="Anterior" class="btn btn-secondary" />
+            </a>
+            <a href="/Simulado/@Model.CodigoSimulado/Questao/@(Model.Numero == Model.QuantidadeDeQuestoes?Model.Numero:Model.Numero + 1)">
+                <input type="button" value="Próxima" class="btn btn-secondary" />
+            </a>
+
+        </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
