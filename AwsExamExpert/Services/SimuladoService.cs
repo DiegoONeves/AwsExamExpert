@@ -184,6 +184,8 @@ namespace AwsExamExpert
                 foreach (var r in q.Pergunta.Respostas)
                     r.Ordem = ordemResposta.FirstOrDefault(x => x.CodigoResposta == r.CodigoResposta).Ordem;
 
+                q.Pergunta.Respostas = q.Pergunta.Respostas.OrderBy(x => x.Ordem).ToList();
+
                 q.Respondidas = ObterRespondidasPor(codigoQuestao: q.CodigoQuestao);
                 if (q.Respondidas?.Count > 0)
                 {

@@ -127,10 +127,10 @@ insert into Resposta (Ativo,CodigoPergunta,Correta,Texto) values
 insert into Pergunta (Ativo,CodigoProva,CodigoDominio,MultiplaEscolha,Texto) values(1,@CodigoProvaInserida,3,0,'Um aplicativo tem usado o AWS DynamoDB para seu armazenamento de dados de back-end. O tamanho da tabela agora aumentou para 20 GB e as verificações na tabela estão causando erros de limitação. Qual dos seguintes deve ser implementado agora para evitar tais erros?');
 select @CodigoPerguntaInserida = MAX(CodigoPergunta) from Pergunta
 insert into Resposta (Ativo,CodigoPergunta,Correta,Texto) values
-(1,@CodigoPerguntaInserida,0,'Large Page size.'),
-(1,@CodigoPerguntaInserida,1,'Reduced page size.'),
-(1,@CodigoPerguntaInserida,0,'Parallel Scans.'),
-(1,@CodigoPerguntaInserida,0,'Sequential scans.')
+(1,@CodigoPerguntaInserida,0,'Aumentar o tamanho da paginação.'),
+(1,@CodigoPerguntaInserida,1,'Reduzir o tamanho da paginação.'),
+(1,@CodigoPerguntaInserida,0,'Scans paralelos.'),
+(1,@CodigoPerguntaInserida,0,'Scans sequenciais.')
 
 
 --pergunta 10
@@ -145,7 +145,7 @@ insert into Resposta (Ativo,CodigoPergunta,Correta,Texto) values
 
 
 --pergunta 11
-insert into Pergunta (Ativo,CodigoProva,CodigoDominio,MultiplaEscolha,Texto) values(1,@CodigoProvaInserida,3,0,'Você está desenvolvendo um aplicativo que fará uso do AWS Kinesis. Devido à alta taxa de transferência, você decide ter vários shards para os fluxos. Qual das opções a seguir é VERDADEIRA quando se trata de processar dados em vários fragmentos?');
+insert into Pergunta (Ativo,CodigoProva,CodigoDominio,MultiplaEscolha,Texto) values(1,@CodigoProvaInserida,3,0,'Você está desenvolvendo um aplicativo que fará uso do AWS Kinesis. Devido à alta taxa de transferência, você decide ter vários shards para os fluxos. Qual das opções a seguir é VERDADEIRA quando se trata de processar dados em vários shards?');
 select @CodigoPerguntaInserida = MAX(CodigoPergunta) from Pergunta
 insert into Resposta (Ativo,CodigoPergunta,Correta,Texto) values
 (1,@CodigoPerguntaInserida,1,'Você não pode garantir a ordem dos dados em vários shards. Só é possível dentro de um shard.'),
@@ -369,31 +369,14 @@ Como o desenvolvedor deve atualizar o aplicativo para melhorar a resiliência do
 select @CodigoPerguntaInserida = MAX(CodigoPergunta) from Pergunta
 insert into Resposta (Ativo,CodigoPergunta,Correta,Texto) values
 (1,@CodigoPerguntaInserida,0,'Revise o conteúdo da solicitação no código do aplicativo.'),
-(1,@CodigoPerguntaInserida,0,'Use o AWS SDK for Java para interagir com APIs da AWS.'),
-(1,@CodigoPerguntaInserida,1,'Escale horizontalmente o aplicativo para que mais instâncias do aplicativo estejam em execução.'),
+(1,@CodigoPerguntaInserida,1,'Use o AWS SDK for Java para interagir com APIs da AWS.'),
+(1,@CodigoPerguntaInserida,0,'Escale horizontalmente o aplicativo para que mais instâncias do aplicativo estejam em execução.'),
 (1,@CodigoPerguntaInserida,0,'Adicione log adicional ao código do aplicativo.'),
 (1,@CodigoPerguntaInserida,0,'Amazon Athena com operações feitas dentro de um bloco de transação')
 
+
+
 --pergunta 35
-insert into Pergunta (Ativo,CodigoProva,CodigoDominio,MultiplaEscolha,Texto) values(1,@CodigoProvaInserida,3,0,'Uma empresa global tem um aplicativo móvel com dados estáticos armazenados em um bucket do Amazon S3 na região us-east-1. A empresa fornece o conteúdo por meio de uma distribuição do Amazon CloudFront. A empresa está lançando o aplicativo móvel na África do Sul. Os dados devem residir na região af-south-1. A empresa não quer implantar um cliente móvel específico para a África do Sul. O que a empresa deve fazer para atender a esses requisitos?');
-select @CodigoPerguntaInserida = MAX(CodigoPergunta) from Pergunta
-insert into Resposta (Ativo,CodigoPergunta,Correta,Texto) values
-(1,@CodigoPerguntaInserida,1,'Use o recurso de restrição geográfica do CloudFront para bloquear o acesso de usuários na África do Sul.'),
-(1,@CodigoPerguntaInserida,0,'Crie uma função Lambda@Edge . Associe a função Lambda@Edge como um gatilho de solicitação de origem à distribuição do CloudFront para alterar a região de origem do S3.'),
-(1,@CodigoPerguntaInserida,0,'Crie uma função Lambda@Edge . Associe a função Lambda@Edge como um gatilho de resposta do visualizador à distribuição do CloudFront para alterar a região de origem do S3.'),
-(1,@CodigoPerguntaInserida,0,'Inclua af-south-1 no nome de domínio alternativo (CNAME) da distribuição do CloudFront.')
-
---pergunta 36
-insert into Pergunta (Ativo,CodigoProva,CodigoDominio,MultiplaEscolha,Texto) values(1,@CodigoProvaInserida,3,0,'Um desenvolvedor está testando uma função do AWS Lambda usando a CLI local do AWS Serverless Application Model (AWS SAM). O aplicativo implementado pela
-função do Lambda faz várias chamadas de API da AWS usando o kit de desenvolvimento de software (SDK) da AWS. O desenvolvedor deseja permitir que a função faça chamadas de API da AWS em uma conta de teste da AWS a partir do laptop do desenvolvedor. O que o desenvolvedor deve fazer para atender a esses requisitos?');
-select @CodigoPerguntaInserida = MAX(CodigoPergunta) from Pergunta
-insert into Resposta (Ativo,CodigoPergunta,Correta,Texto) values
-(1,@CodigoPerguntaInserida,0,'Edite o arquivo template.yml. Adicione a propriedade AWS_ACCESS_KEY_ID e a propriedade AWS_SECRET_ACCESS_KEY na seção Globals.'),
-(1,@CodigoPerguntaInserida,1,'Adicione um perfil de teste usando o comando aws configure com a opção --profile. Execute o AWS SAM usando o comando sam local invoke com a opção -profile.'),
-(1,@CodigoPerguntaInserida,0,'Edite o bloco template.yml. Para o recurso AWS::Serverless::Function, defina a função como uma função do IAM na conta da AWS.'),
-(1,@CodigoPerguntaInserida,0,'Execute a função usando o comando sam local invoke. Substitua o parâmetro AWS_ACCESS_KEY_ID e o parâmetro AWS_SECRET_ACCESS_KEY especificando a opção --parameter-overrides.')
-
---pergunta 37
 insert into Pergunta (Ativo,CodigoProva,CodigoDominio,MultiplaEscolha,Texto) values(1,@CodigoProvaInserida,3,1,'Um desenvolvedor projetou um aplicativo em uma instância do Amazon EC2. O aplicativo faz solicitações de API para objetos em um bucket do Amazon S3.
 Qual combinação de etapas garantirá que o aplicativo faça as solicitações de API da maneira MAIS segura? (Escolha duas)');
 select @CodigoPerguntaInserida = MAX(CodigoPergunta) from Pergunta
@@ -403,17 +386,6 @@ insert into Resposta (Ativo,CodigoPergunta,Correta,Texto) values
 (1,@CodigoPerguntaInserida,1,'Adicione a função do IAM a um perfil de instância. Anexe o perfil de instância à instância do EC2.'),
 (1,@CodigoPerguntaInserida,0,'Crie uma função do IAM que tenha permissões para o bucket do S3. Atribua a função a um grupo da 1AM.'),
 (1,@CodigoPerguntaInserida,0,'Armazene as credenciais do usuário do IAM nas variáveis ​​de ambiente na instância do EC2.')
-
---pergunta 38
-insert into Pergunta (Ativo,CodigoProva,CodigoDominio,MultiplaEscolha,Texto) values(1,@CodigoProvaInserida,5,0,'Um desenvolvedor está testando uma função do AWS Lambda usando a CLI local do AWS Serverless Application Model (AWS SAM). O aplicativo implementado pela
-função do Lambda faz várias chamadas de API da AWS usando o kit de desenvolvimento de software (SDK) da AWS. O desenvolvedor deseja permitir que a função faça chamadas de API da AWS em uma conta de teste da AWS a partir do laptop do desenvolvedor. O que o desenvolvedor deve fazer para atender a esses requisitos?');
-select @CodigoPerguntaInserida = MAX(CodigoPergunta) from Pergunta
-insert into Resposta (Ativo,CodigoPergunta,Correta,Texto) values
-(1,@CodigoPerguntaInserida,0,'Crie o certificado para o domínio na mesma região que o aplicativo. Certifique-se de que o nome de domínio alternativo (CNAME) nas configurações de distribuição corresponda ao nome de domínio no certificado.'),
-(1,@CodigoPerguntaInserida,1,'Crie o certificado na região eu-west-1. Certifique-se de que o nome de domínio alternativo (CNAME) nas configurações de distribuição corresponda ao nome de domínio no certificado.'),
-(1,@CodigoPerguntaInserida,0,'Recrie a distribuição do CloudFront na mesma região do certificado.'),
-(1,@CodigoPerguntaInserida,0,'Especifique o nome do certificado do ACM como o objeto raiz padrão da distribuição do CloudFront.')
-
 
 --inserindo a prova 2
 insert into Prova (Descricao,Ativo) values ('AWS Certified Solutions Architect - Associate',1)

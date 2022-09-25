@@ -78,7 +78,8 @@ namespace AwsExamExpert.Controllers
             var simuladoAtual = _service.ObterSimuladosPor(codigoSimulado: questao.CodigoSimulado).FirstOrDefault();
             if (simuladoAtual.Finalizado)
                 return RedirectToAction("Resultado", new { codigoSimulado = questao.CodigoSimulado });
-            return RedirectToAction("Pergunta", new { codigoSimulado = questao.CodigoSimulado, numeroQuestao = questao.Numero });
+
+            return RedirectToAction("Pergunta", new { codigoSimulado = questao.CodigoSimulado, numeroQuestao = ++questao.Numero });
         }
 
 
