@@ -325,8 +325,8 @@ namespace AwsExamExpert
                 Gabarito g = new();
                 g.NumeroQuestao = q.Numero;
                 g.Texto = q.Pergunta.Texto;
-                g.Resposta = string.Join(", ", q.Pergunta.Respostas.Where(x => x.Correta).Select(x => x.Texto));
-                g.Respondida = string.Join(", ", q.Pergunta.Respostas.Where(y => q.Respondidas.Select(x => x.CodigoResposta).Contains(y.CodigoResposta)).Select(x => x.Texto));
+                g.Resposta = string.Join(" | ", q.Pergunta.Respostas.Where(x => x.Correta).Select(x => x.Texto));
+                g.Respondida = string.Join(" | ", q.Pergunta.Respostas.Where(y => q.Respondidas.Select(x => x.CodigoResposta).Contains(y.CodigoResposta)).Select(x => x.Texto));
                 g.Resultado = q.Pergunta.Respostas.Where(x => x.Correta).Select(x => x.CodigoResposta).All(z => q.Respondidas.Select(x => x.CodigoResposta).Contains(z)) ? "Correta" : "Incorreta";
                 gabarito.Add(g);
             }

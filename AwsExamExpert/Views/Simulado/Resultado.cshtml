@@ -60,19 +60,20 @@
 </div>
 <div class="row">
     <h3>Gabarito da Prova</h3>
-    <table class="table table-bordered table-hover">
-        <thead>
-            <tr>
-                <th scope="col">Nº</th>
-                <th scope="col">Resultado</th>
-                <th scope="col">Pergunta</th>
-                <th scope="col">Resposta(s)</th>
-                <th scope="col">Respondida(s)</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (int i = 0; i < Model.Gabarito.Count; i++)
-            {
+
+    @for (int i = 0; i < Model.Gabarito.Count; i++)
+    {
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Nº</th>
+                    <th scope="col">Resultado</th>
+                    <th scope="col">Pergunta</th>
+                    <th scope="col">Resposta(s) correta(s)</th>
+                    <th scope="col">Respondida(s)</th>
+                </tr>
+            </thead>
+            <tbody>
                 <tr>
                     <th scope="row">@Model.Gabarito[i].NumeroQuestao</th>
                     @if (Model.Gabarito[i].Resultado == "Correta")
@@ -87,9 +88,10 @@
                     <td>@Model.Gabarito[i].Resposta</td>
                     <td>@Model.Gabarito[i].Respondida</td>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    }
+
 </div>
 <div>
     <a asp-action="Resultados">Meus resultados</a>
