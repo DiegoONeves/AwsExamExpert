@@ -134,7 +134,7 @@ insert into Resposta (Ativo,CodigoPergunta,Correta,Texto) values
 
 
 --pergunta 10
-insert into Pergunta (Ativo,CodigoProva,CodigoDominio,MultiplaEscolha,Texto) values(1,@CodigoProvaInserida,2,1,'Você desenvolveu um conjunto de scripts usando o AWS Lambda. Esses scripts precisam acessar instâncias do EC2 em uma VPC. Qual das opções a seguir precisa ser feita para garantir que a função AWS Lambda possa acessar os recursos na VPC? (Selecione DOIS)');
+insert into Pergunta (Ativo,CodigoProva,CodigoDominio,MultiplaEscolha,Texto) values(1,@CodigoProvaInserida,2,1,'Você desenvolveu um conjunto de scripts usando o AWS Lambda. Esses scripts precisam acessar instâncias do EC2 em uma VPC. Qual das opções a seguir precisa ser feita para garantir que a função AWS Lambda possa acessar os recursos na VPC? (Selecione duas)');
 select @CodigoPerguntaInserida = MAX(CodigoPergunta) from Pergunta
 insert into Resposta (Ativo,CodigoPergunta,Correta,Texto) values
 (1,@CodigoPerguntaInserida,1,'Certifique-se de que os IDs de sub-rede estejam configurados na função do Lambda.'),
@@ -193,13 +193,13 @@ insert into Resposta (Ativo,CodigoPergunta,Correta,Texto) values
 
 
 --pergunta 16
-insert into Pergunta (Ativo,CodigoProva,CodigoDominio,MultiplaEscolha,Texto) values(1,@CodigoProvaInserida,1,1,'Você implantou um aplicativo em uma instância do EC2. Esse aplicativo faz chamadas para um serviço do DynamoDB. Existem vários problemas de desempenho presentes no aplicativo. Você decide usar o serviço XRay para depurar os problemas de desempenho. Você não consegue ver as trilhas no serviço XRay. Qual dos seguintes poderia ser o problema subjacente? Escolha 2 respostas entre as opções dadas abaixo.');
+insert into Pergunta (Ativo,CodigoProva,CodigoDominio,MultiplaEscolha,Texto) values(1,@CodigoProvaInserida,1,1,'Você implantou um aplicativo em uma instância do EC2. Esse aplicativo faz chamadas para um serviço do DynamoDB. Existem vários problemas de desempenho presentes no aplicativo. Você decide usar o serviço X-Ray para depurar os problemas de desempenho. Você não consegue ver as trilhas no serviço XRay. Qual dos seguintes poderia ser o problema subjacente? Escolha 2 respostas entre as opções dadas abaixo.');
 select @CodigoPerguntaInserida = MAX(CodigoPergunta) from Pergunta
 insert into Resposta (Ativo,CodigoPergunta,Correta,Texto) values
 (1,@CodigoPerguntaInserida,1,'O daemon do X-Ray não está instalado na instância do EC2.'),
 (1,@CodigoPerguntaInserida,0,'A AMI correta não é escolhida para a instância do EC2.'),
-(1,@CodigoPerguntaInserida,1,'Certifique-se de que a função do IAM anexada à instância tenha permissão para fazer upload de dados no X-Ray.'),
-(1,@CodigoPerguntaInserida,0,'Certifique-se de que a função do IAM anexada à instância tenha permissão para fazer upload de dados no Cloudwatch.')
+(1,@CodigoPerguntaInserida,1,'Certifique-se de que a role do IAM anexada à instância tenha permissão para fazer upload de dados no X-Ray.'),
+(1,@CodigoPerguntaInserida,0,'Certifique-se de que a role do IAM anexada à instância tenha permissão para fazer upload de dados no Cloudwatch.')
 
 
 --pergunta 17
@@ -343,7 +343,7 @@ insert into Resposta (Ativo,CodigoPergunta,Correta,Texto) values
 (1,@CodigoPerguntaInserida,0,'AWS Elastic Compute Cloud (AWS EC2) SpotFleet')
 
 --pergunta 32
-insert into Pergunta (Ativo,CodigoProva,CodigoDominio,MultiplaEscolha,Texto) values(1,@CodigoProvaInserida,3,0,'Um serviço de compartilhamento de arquivos usa o AWS S3 para armazenar arquivos carregados pelos usuários. Os arquivos são acessados ??com frequência aleatória. Os populares são baixados todos os dias, enquanto outros não com tanta frequência e alguns raramente. Qual é a classe de armazenamento de objetos do AWS S3 mais econômica para implementar?');
+insert into Pergunta (Ativo,CodigoProva,CodigoDominio,MultiplaEscolha,Texto) values(1,@CodigoProvaInserida,3,0,'Um serviço de compartilhamento de arquivos usa o AWS S3 para armazenar arquivos carregados pelos usuários. Os arquivos são acessados com frequência aleatória. Os populares são baixados todos os dias, enquanto outros não com tanta frequência e alguns raramente. Qual é a classe de armazenamento de objetos do AWS S3 mais econômica para implementar?');
 select @CodigoPerguntaInserida = MAX(CodigoPergunta) from Pergunta
 insert into Resposta (Ativo,CodigoPergunta,Correta,Texto) values
 (1,@CodigoPerguntaInserida,0,'AWS S3 Standard'),
@@ -382,9 +382,9 @@ Qual combinação de etapas garantirá que o aplicativo faça as solicitações 
 select @CodigoPerguntaInserida = MAX(CodigoPergunta) from Pergunta
 insert into Resposta (Ativo,CodigoPergunta,Correta,Texto) values
 (1,@CodigoPerguntaInserida,0,'Crie um usuário do IAM que tenha permissões para o bucket do S3. Adicione o usuário a um grupo do IAM.'),
-(1,@CodigoPerguntaInserida,1,'Crie uma função do IAM que tenha permissões para o bucket do S3.'),
-(1,@CodigoPerguntaInserida,1,'Adicione a função do IAM a um perfil de instância. Anexe o perfil de instância à instância do EC2.'),
-(1,@CodigoPerguntaInserida,0,'Crie uma função do IAM que tenha permissões para o bucket do S3. Atribua a função a um grupo da 1AM.'),
+(1,@CodigoPerguntaInserida,1,'Crie uma role do IAM que tenha permissões para o bucket do S3.'),
+(1,@CodigoPerguntaInserida,1,'Adicione a role do IAM a um perfil de instância. Anexe o perfil de instância à instância do EC2.'),
+(1,@CodigoPerguntaInserida,0,'Crie uma role do IAM que tenha permissões para o bucket do S3. Atribua a role a um grupo da IAM.'),
 (1,@CodigoPerguntaInserida,0,'Armazene as credenciais do usuário do IAM nas variáveis ​​de ambiente na instância do EC2.')
 
 --inserindo a prova 2
