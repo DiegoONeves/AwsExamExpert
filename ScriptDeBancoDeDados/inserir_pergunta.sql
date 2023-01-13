@@ -2,16 +2,15 @@
 declare @CodigoPerguntaInserida int = 0;
 
 insert into Pergunta (Ativo,CodigoProva,CodigoDominio,MultiplaEscolha,Texto) values(1,2,3,0,
-'Voc� � um desenvolvedor de API para uma grande empresa de manufatura. Voc� desenvolveu um recurso de API que adiciona novos produtos ao invent�rio do distribuidor usando uma solicita��o POST HTTP. Ele inclui um cabe�alho Origin e aceita application/x-www-form-encoded como tipo de conte�do de solicita��o. Qual cabe�alho de resposta permitir� o acesso a este recurso de outra origem?');
+'Você tem uma VPC com uma sub-rede que hospeda uma instância do AWS RDS. Seu gerente pediu para você começar a monitorar todas as modificações feitas em seus dados pelos aplicativos. Você decide usar uma função do Lambda para fazer isso. No entanto, você precisa permitir o acesso da função ao VPC. Como você vai fazer isso?');
 select @CodigoPerguntaInserida = MAX(CodigoPergunta) from Pergunta
 insert into Resposta (Ativo,CodigoPergunta,Correta,Texto) values
-(1,@CodigoPerguntaInserida,1,'Access-Control-Allow-Origin.'),
-(1,@CodigoPerguntaInserida,0,'Access-Control-Request-Method'),
-(1,@CodigoPerguntaInserida,0,'Access-Control-Request-Headers'),
-(1,@CodigoPerguntaInserida,0,'Nenhuma das anteriores'),
-(1,@CodigoPerguntaInserida,0,'A e B')
+(1,@CodigoPerguntaInserida,0,'Crie uma função para permitir o acesso entre Lambda e RDS.'),
+(1,@CodigoPerguntaInserida,0,'Crie uma política e uma função para permitir o acesso entre o Lambda e o RDS.'),
+(1,@CodigoPerguntaInserida,0,'Crie uma função para permitir o acesso entre o Lambda e a sub-rede.'),
+(1,@CodigoPerguntaInserida,1,'Crie uma função para permitir o acesso entre Lambda e VPC.')
 
 
 
---select * from Dominio where CodigoProva = 2
+select * from Dominio where CodigoProva = 2
 select * from Pergunta

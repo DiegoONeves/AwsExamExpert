@@ -100,5 +100,33 @@ namespace AwsExamExpert.Controllers
 
             return RedirectToAction("Resultados");
         }
+
+        public IActionResult RefazerProva(int codigoSimulado)
+        {
+            var simulado = _service.ObterSimuladosPor(codigoSimulado: codigoSimulado).FirstOrDefault();
+
+            RefazerProvaViewModel model = new()
+            {
+                CodigoSimulado = codigoSimulado,
+                Prova = simulado.Prova.Descricao
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult RefazerProva(RefazerProvaViewModel vm)
+        {
+            if (ModelState.IsValid)
+            {
+                vm.CodigoUsuario = ObterCodigoUsuarioLogado();
+                var novoSimulado = _service.RefazerSimulado(vm);
+                if (novoSimulado != null)
+                    return RedirectToAction("Pergunta", new { codigoSimulado = novoSimulado.CodigoSimulado, numeroQuestao = 1 });
+            }
+
+            ModelState.AddModelError("", "Verifique se os campos obrigatórios foram preenchidos.");
+            return View(vm);
+        }
     }
 }

@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = $"Resultado da prova {Model.Prova.Descricao}";
 }
-
 <div class="row">
     <h1>Prova @Model.Prova.Descricao</h1>
     <hr />
@@ -92,6 +91,9 @@
         </table>
     }
 
+</div>
+<div class="row">
+    @Html.ActionLink("Refazer esse simulado","RefazerProva","Simulado",new { codigoSimulado = Model.CodigoSimulado },new { @class = "btn btn-primary"})
 </div>
 <div>
     <a asp-action="Resultados">Meus resultados</a>

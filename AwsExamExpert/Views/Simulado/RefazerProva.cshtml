@@ -1,0 +1,31 @@
+﻿@model AwsExamExpert.Models.RefazerProvaViewModel
+
+@{
+    ViewData["Title"] = "Refazer Prova";
+}
+
+<h1>Refazer Prova - @Model.Prova</h1>
+
+<h4>Escolha as configurações para refazer a prova</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="RefazerProva">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="CodigoSimulado" hidden class="form-control" />
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="SomenteIncorretas" /> @Html.DisplayNameFor(model => model.SomenteIncorretas)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Iniciar Prova" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Resultado" asp-route-codigoSimulado="@Model.CodigoSimulado" >Voltar</a>
+</div>
+
