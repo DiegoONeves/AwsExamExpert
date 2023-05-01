@@ -24,18 +24,16 @@ namespace AwsExamExpert
             novoSimulado.Percentual = 0;
             novoSimulado.Aprovado = false;
             novoSimulado.PontosConquistados = 0;
-            novoSimulado.PontosDisputados = 0;
+            novoSimulado.PontosDisputados = 1000;
 
             using var scope = new TransactionScope();
             using (var conn = new SqlConnection(ConnectionString))
                 novoSimulado.CodigoSimulado = conn.ExecuteScalar<int>("insert into Simulado (DataDoSimulado,CodigoProva,CodigoUsuario,QuantidadeDeQuestoes,Finalizado,Percentual,Aprovado,PontosConquistados,PontosDisputados) values(@DataDoSimulado,@CodigoProva,@CodigoUsuario,@QuantidadeDeQuestoes,@Finalizado,@Percentual,@Aprovado,@PontosConquistados,@PontosDisputados); SELECT SCOPE_IDENTITY()", novoSimulado);
 
-            GerarQuestoes(novoSimulado, ObterPerguntasAleatorios(novoSimulado));
+            GerarQuestoes(novoSimulado, ObterPerguntasAleatorios(novoSimulado, ativo: true));
+            ElegerQuestoesQueSeraoPontuadas(novoSimulado.CodigoSimulado);
 
             novoSimulado.Questoes = ObterQuestao(codigoSimulado: novoSimulado.CodigoSimulado);
-
-            foreach (var q in novoSimulado.Questoes)
-                novoSimulado.PontosDisputados += q.Pergunta.Respostas.Select(x => x.Pontuacao).Sum();
 
             AtualizarPontuacaoDisputada(novoSimulado.CodigoSimulado, novoSimulado.PontosDisputados);
             AtualizarQuantidadeDeQuestoes(novoSimulado.CodigoSimulado);
@@ -62,7 +60,7 @@ namespace AwsExamExpert
                 Percentual = 0,
                 Aprovado = false,
                 PontosConquistados = 0,
-                PontosDisputados = 0
+                PontosDisputados = simuladoAntigo.PontosDisputados,
             };
 
             using var scope = new TransactionScope();
@@ -73,10 +71,11 @@ namespace AwsExamExpert
 
             novoSimulado.Questoes = ObterQuestao(codigoSimulado: novoSimulado.CodigoSimulado);
 
-            foreach (var q in novoSimulado.Questoes)
-                novoSimulado.PontosDisputados += q.Pergunta.Respostas.Select(x => x.Pontuacao).Sum();
 
-            AtualizarPontuacaoDisputada(novoSimulado.CodigoSimulado, novoSimulado.PontosDisputados);
+
+            ElegerQuestoesQueSeraoPontuadas(novoSimulado.CodigoSimulado);
+
+
             AtualizarQuantidadeDeQuestoes(novoSimulado.CodigoSimulado);
 
             scope.Complete();
@@ -89,17 +88,34 @@ namespace AwsExamExpert
             int numeroQuestao = 1;
             foreach (var p in perguntasUsadas)
             {
-                var questao = new Questao { CodigoPergunta = p.CodigoPergunta, Numero = numeroQuestao, CodigoSimulado = novoSimulado.CodigoSimulado };
+                var questao = new Questao { CodigoPergunta = p.CodigoPergunta, Numero = numeroQuestao, CodigoSimulado = novoSimulado.CodigoSimulado, UsadaNaPontuacao = false };
                 InserirQuestao(questao);
+                InserirAnotacao(new Anotacao { CodigoPergunta = p.CodigoPergunta, CodigoUsuario = novoSimulado.CodigoUsuario, Texto = "" });
                 numeroQuestao++;
                 InserirOrdemResposta(novoSimulado.CodigoSimulado, questao.CodigoQuestao, p.Respostas);
             }
         }
 
+        private void ElegerQuestoesQueSeraoPontuadas(int codigoSimulado)
+        {
+            var questoesDoSimulado = ObterQuestao(codigoSimulado);
+            int numeroDeQuestoes = questoesDoSimulado.Count;
+            int numeroDeQuestoesQueSeraoUsadas = (int)(numeroDeQuestoes * 78) / 100;//neste exame 22% das questões são descartadas
+
+            var rnd = new Random();
+            var questoesUsadas = questoesDoSimulado.OrderBy(item => rnd.Next()).Take(numeroDeQuestoesQueSeraoUsadas).ToList();
+            foreach (var q in questoesUsadas)
+            {
+                q.UsadaNaPontuacao = true;
+                AtualizarQuestao(q);
+            }
+
+        }
+
         private void InserirQuestao(Questao novaQuestao)
         {
             using var conn = new SqlConnection(ConnectionString);
-            novaQuestao.CodigoQuestao = conn.ExecuteScalar<int>("insert into Questao (CodigoSimulado,Numero,CodigoPergunta) values(@CodigoSimulado,@Numero,@CodigoPergunta); SELECT SCOPE_IDENTITY()", novaQuestao);
+            novaQuestao.CodigoQuestao = conn.ExecuteScalar<int>("insert into Questao (CodigoSimulado,Numero,CodigoPergunta,UsadaNaPontuacao) values(@CodigoSimulado,@Numero,@CodigoPergunta,@UsadaNaPontuacao); SELECT SCOPE_IDENTITY();", novaQuestao);
         }
 
         public void ApurarResultadoParcial(int codigoSimulado)
@@ -107,20 +123,25 @@ namespace AwsExamExpert
             var simulado = ObterSimuladosPor(codigoSimulado: codigoSimulado).FirstOrDefault();
             simulado.PontosConquistados = 0;
 
-            var questoesUsadas = simulado.Questoes.Take(50);
+            var todasQuestoes = simulado.Questoes.ToList();
             List<Resposta> respostasCorretas = new();
-            foreach (var q in questoesUsadas)
-                respostasCorretas.AddRange(q.Pergunta.Respostas.Where(x => x.Correta));
+            int respostasPontuaveis = 0;
+            foreach (var q in todasQuestoes)
+            {
+                if (q.UsadaNaPontuacao)
+                    respostasPontuaveis += q.Pergunta.Respostas.Count(x => x.Correta);
 
+                respostasCorretas.AddRange(q.Pergunta.Respostas.Where(x => x.Correta));
+            }
             List<Respondida> respondidas = new();
             foreach (var q in simulado.Questoes.Where(x => x.Respondidas.Any()))
                 respondidas.AddRange(q.Respondidas);
 
             int pontuacaoMaxima = 1000;
-            decimal pontuacaoPorQuestao = (decimal)pontuacaoMaxima / (decimal)respostasCorretas.Count;
+            decimal pontuacaoPorQuestao = (decimal)pontuacaoMaxima / (decimal)respostasPontuaveis;
             int quantasAcertadas = 0;
 
-            foreach (var q in questoesUsadas)
+            foreach (var q in todasQuestoes)
             {
                 bool possuiAlgumaRespostaErrada = false;
                 foreach (var r in respondidas.Where(x => x.CodigoQuestao == q.CodigoQuestao))
@@ -129,7 +150,8 @@ namespace AwsExamExpert
                     if (acertou == 0)
                         possuiAlgumaRespostaErrada = true;
 
-                    quantasAcertadas += acertou;
+                    if (q.UsadaNaPontuacao)
+                        quantasAcertadas += acertou;
                 }
 
                 q.Acertou = !possuiAlgumaRespostaErrada;
@@ -148,7 +170,7 @@ namespace AwsExamExpert
         private void AtualizarQuestao(Questao q)
         {
             using var conn = new SqlConnection(ConnectionString);
-            conn.Execute("update Questao SET Acertou = @Acertou WHERE CodigoQuestao = @CodigoQuestao ", q);
+            conn.Execute("update Questao SET Acertou = @Acertou, UsadaNaPontuacao = @UsadaNaPontuacao WHERE CodigoQuestao = @CodigoQuestao ", q);
         }
 
         public List<Simulado> ObterSimuladosPor(int? codigoSimulado = null, int? codigoUsuario = null, bool? finalizado = null)
@@ -212,7 +234,7 @@ namespace AwsExamExpert
             }
             if (questao.Pergunta.MultiplaEscolha)
             {
-                int qtdRespostasCorretas = ObterRepostas(codigoPergunta: questao.CodigoPergunta).Count(x => x.Correta);
+                int qtdRespostasCorretas = ObterRepostas(codigoPergunta: questao.CodigoPergunta, ativo: true).Count(x => x.Correta);
                 if (questao.CodigoRespostasUsadas.Count != qtdRespostasCorretas)
                 {
                     tran.Complete();
@@ -229,18 +251,24 @@ namespace AwsExamExpert
 
         }
 
-        public List<Questao> ObterQuestao(int codigoSimulado, int? numero = null, int? codigoUsuario = null, bool? somenteCorretas = null, bool? somenteIncorretas = null)
+        public List<Questao> ObterQuestao(int codigoSimulado,
+            int? numero = null,
+            int? codigoPergunta = null,
+            int? codigoUsuario = null,
+            bool? somenteCorretas = null,
+            bool? somenteIncorretas = null,
+            bool? usadaNaPontuacao = null)
         {
             List<Questao> questoes = new();
             bool? acertou = null;
-            
+
             if (somenteCorretas.HasValue && somenteCorretas == true)
                 acertou = true;
             else if (somenteIncorretas.HasValue && somenteIncorretas == true)
                 acertou = false;
 
             using (var conn = new SqlConnection(ConnectionString))
-                questoes = conn.Query<Questao>("SELECT * FROM Questao WHERE CodigoSimulado = @CodigoSimulado AND Numero = ISNULL(@Numero,Numero) AND Acertou = ISNULL(@Acertou,Acertou);", new { @CodigoSimulado = codigoSimulado, @Numero = numero, @Acertou = acertou }).ToList();
+                questoes = conn.Query<Questao>("SELECT * FROM Questao WHERE CodigoSimulado = @CodigoSimulado AND Numero = ISNULL(@Numero,Numero) AND Acertou = ISNULL(@Acertou,Acertou) AND UsadaNaPontuacao = ISNULL(@UsadaNaPontuacao,UsadaNaPontuacao) AND CodigoPergunta = ISNULL(@CodigoPergunta,CodigoPergunta);", new { @CodigoSimulado = codigoSimulado, @Numero = numero, @Acertou = acertou, @UsadaNaPontuacao = usadaNaPontuacao, @CodigoPergunta = codigoPergunta }).ToList();
 
             foreach (var q in questoes)
             {
@@ -270,10 +298,10 @@ namespace AwsExamExpert
 
 
 
-        public List<Pergunta> ObterPerguntasPor(int? codigoPergunta = null, int? codigoProva = null, List<int> codigoPerguntaIn = null)
+        public List<Pergunta> ObterPerguntasPor(int? codigoPergunta = null, int? codigoProva = null, List<int> codigoPerguntaIn = null, int? codigoUsuario = null, bool? ativo = null)
         {
             List<Pergunta> perguntas = new();
-            string sqlQuery = $"SELECT * FROM Pergunta WHERE CodigoPergunta = ISNULL(@CodigoPergunta,CodigoPergunta) AND CodigoProva = ISNULL(@CodigoProva,CodigoProva)";
+            string sqlQuery = $"SELECT * FROM Pergunta WHERE CodigoPergunta = ISNULL(@CodigoPergunta,CodigoPergunta) AND Ativo = ISNULL(@Ativo,Ativo) AND CodigoProva = ISNULL(@CodigoProva,CodigoProva)";
             if (codigoPerguntaIn?.Count > 0)
                 sqlQuery += " AND CodigoPergunta IN @CodigoPerguntaIn";
             using (var conn = new SqlConnection(ConnectionString))
@@ -283,28 +311,30 @@ namespace AwsExamExpert
                     {
                         @CodigoPergunta = codigoPergunta,
                         @CodigoProva = codigoProva,
-                        @CodigoPerguntaIn = codigoPerguntaIn
+                        @CodigoPerguntaIn = codigoPerguntaIn,
+                        @Ativo = ativo
                     }).ToList();
                 foreach (var p in perguntas)
                 {
-                    p.Respostas = ObterRepostas(p.CodigoPergunta);
+                    p.Respostas = ObterRepostas(p.CodigoPergunta, ativo: true);
                     p.Prova = ObterProvas(codigoProva: p.CodigoProva).FirstOrDefault();
                     p.Dominio = ObterDominiosPor(codigoDominio: p.CodigoDominio, codigoProva: p.CodigoProva).FirstOrDefault();
+                    p.Anotacao = ObterAnotacao(codigoUsuario: codigoUsuario, codigoPergunta: p.CodigoPergunta);
                 }
             }
             return perguntas;
         }
 
-        private List<Pergunta> ObterPerguntasAleatorios(Simulado simulado)
+        private List<Pergunta> ObterPerguntasAleatorios(Simulado simulado, bool? ativo = null)
         {
             var rnd = new Random();
-            return ObterPerguntasPor(codigoProva: simulado.CodigoProva).OrderBy(item => rnd.Next()).Take(simulado.QuantidadeDeQuestoes).ToList();
+            return ObterPerguntasPor(codigoProva: simulado.CodigoProva, ativo: ativo).OrderBy(item => rnd.Next()).Take(simulado.QuantidadeDeQuestoes).ToList();
         }
 
-        private List<Resposta> ObterRepostas(int codigoPergunta)
+        private List<Resposta> ObterRepostas(int? codigoPergunta = null, bool? ativo = null)
         {
             using var conn = new SqlConnection(ConnectionString);
-            return conn.Query<Resposta>("SELECT * FROM Resposta WHERE CodigoPergunta = @CodigoPergunta", new { @CodigoPergunta = codigoPergunta }).ToList();
+            return conn.Query<Resposta>("SELECT * FROM Resposta WHERE CodigoPergunta = ISNULL(@CodigoPergunta,CodigoPergunta) AND Ativo = ISNULL(@Ativo,Ativo)", new { @CodigoPergunta = codigoPergunta, @Ativo = ativo }).ToList();
         }
 
         public List<Prova> ObterProvas(int? codigoProva = null, bool? ativo = null)
@@ -398,18 +428,19 @@ namespace AwsExamExpert
             var respondidas = ObterRespondidasPor();
             foreach (var q in questoes)
             {
-                Gabarito g = new();
-                g.NumeroQuestao = q.Numero;
-                g.Texto = q.Pergunta.Texto;
-                g.Resposta = string.Join(" | ", q.Pergunta.Respostas.Where(x => x.Correta).Select(x => x.Texto));
-                g.Respondida = string.Join(" | ", q.Pergunta.Respostas.Where(y => q.Respondidas.Select(x => x.CodigoResposta).Contains(y.CodigoResposta)).Select(x => x.Texto));
-                g.Resultado = q.Pergunta.Respostas.Where(x => x.Correta).Select(x => x.CodigoResposta).All(z => q.Respondidas.Select(x => x.CodigoResposta).Contains(z)) ? "Correta" : "Incorreta";
+                Gabarito g = new()
+                {
+                    NumeroQuestao = q.Numero,
+                    Texto = q.Pergunta.Texto,
+                    Resposta = string.Join(" | ", q.Pergunta.Respostas.Where(x => x.Correta).Select(x => x.Texto)),
+                    Respondida = string.Join(" | ", q.Pergunta.Respostas.Where(y => q.Respondidas.Select(x => x.CodigoResposta).Contains(y.CodigoResposta)).Select(x => x.Texto)),
+                    Resultado = q.Acertou ? "Correta" : "Incorreta"
+                };
                 gabarito.Add(g);
             }
 
             return gabarito;
         }
-
         public void InserirOrdemResposta(int codigoSimulado, int codigoQuestao, List<Resposta> respostas)
         {
             var rnd = new Random();
@@ -459,6 +490,26 @@ namespace AwsExamExpert
                     @CodigoPergunta = codigoPergunta
                 }).ToList();
         }
+
+        public void InserirAnotacao(Anotacao anotacao)
+        {
+            using var conn = new SqlConnection(ConnectionString);
+            anotacao.CodigoAnotacao = conn.ExecuteScalar<int>("INSERT Anotacao (Texto,CodigoUsuario,CodigoPergunta) VALUES (@Texto,@CodigoUsuario,@CodigoPergunta); SELECT SCOPE_IDENTITY();", anotacao);
+        }
+
+        public void EditarAnotacao(int? codigoAnotacao = null)
+        {
+            using var conn = new SqlConnection(ConnectionString);
+            conn.Execute("UPDATE Anotacao SET Texto = @Texto WHERE CodigoAnotacao = @CodigoAnotacao", new { @CodigoAnotacao = codigoAnotacao });
+        }
+
+        public List<Anotacao> ObterAnotacao(int? codigoUsuario = null, int? codigoPergunta = null)
+        {
+            using var conn = new SqlConnection(ConnectionString);
+            return conn.Query<Anotacao>("SELECT * FROM Anotacao WHERE CodigoUsuario = ISNULL(@CodigoUsuario,CodigoUsuario) AND CodigoPergunta = ISNULL(@CodigoPergunta,CodigoPergunta);", new { @CodigoUsuario = codigoUsuario, @CodigoPergunta = codigoPergunta }).ToList();
+        }
+
+
 
     }
 }

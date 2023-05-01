@@ -27,6 +27,8 @@ namespace AwsExamExpert.Models
         public bool Aprovado { get; set; }
         public bool Finalizado { get; set; }
 
+
+
         [Display(Name = "Situação")]
         public string Situacao { get; set; }
 

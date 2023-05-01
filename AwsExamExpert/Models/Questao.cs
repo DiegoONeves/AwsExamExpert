@@ -18,6 +18,7 @@ namespace AwsExamExpert.Models
         public int QuantidadeDeQuestoes { get; set; }
 
         public bool Acertou { get; set; }
+        public bool UsadaNaPontuacao { get; set; }
         public override string ToString()
         {
             return $"CodigoQuestao: {CodigoQuestao} - CodigoSimulado: {CodigoSimulado} - Número: {Numero} - CodigoPergunta: {CodigoPergunta}";

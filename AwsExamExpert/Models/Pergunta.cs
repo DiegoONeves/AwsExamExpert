@@ -22,6 +22,8 @@ namespace AwsExamExpert.Models
         public int CodigoDominio { get; set; }
         public Dominio Dominio { get; set; }
 
+        public List<Anotacao> Anotacao { get; set; }
+
         public override string ToString()
         {
             return $"CodigoPergunta: {CodigoPergunta} - Pegunta: {Texto}";
