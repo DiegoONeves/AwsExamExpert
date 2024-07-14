@@ -18,12 +18,6 @@ namespace AwsExamExpert.Models
         public List<Resposta> Respostas { get; set; }
         public Prova Prova { get; set; }
 
-        [Display(Name = "Domínio")]
-        public int CodigoDominio { get; set; }
-        public Dominio Dominio { get; set; }
-
-        public List<Anotacao> Anotacao { get; set; }
-
         public override string ToString()
         {
             return $"CodigoPergunta: {CodigoPergunta} - Pegunta: {Texto}";

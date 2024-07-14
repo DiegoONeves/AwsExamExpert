@@ -16,15 +16,11 @@
                 @Html.DisplayNameFor(model => model.CodigoProva)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CodigoDominio)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Texto)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Ativo)
             </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -35,16 +31,10 @@
                     @Html.DisplayFor(modelItem => item.Prova.Descricao)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Dominio.Descricao)
-                </td>
-                <td>
                     @Html.DisplayFor(modelItem => item.Texto)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Ativo)
-                </td>
-                <td>
-                    @Html.ActionLink("Editar Domínio", "TrocarDominio", new { codigoPergunta = item.CodigoPergunta })
                 </td>
             </tr>
         }

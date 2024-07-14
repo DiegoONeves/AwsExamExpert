@@ -90,7 +90,7 @@ namespace AwsExamExpert
             {
                 var questao = new Questao { CodigoPergunta = p.CodigoPergunta, Numero = numeroQuestao, CodigoSimulado = novoSimulado.CodigoSimulado, UsadaNaPontuacao = false };
                 InserirQuestao(questao);
-                InserirAnotacao(new Anotacao { CodigoPergunta = p.CodigoPergunta, CodigoUsuario = novoSimulado.CodigoUsuario, Texto = "" });
+               
                 numeroQuestao++;
                 InserirOrdemResposta(novoSimulado.CodigoSimulado, questao.CodigoQuestao, p.Respostas);
             }
@@ -318,8 +318,6 @@ namespace AwsExamExpert
                 {
                     p.Respostas = ObterRepostas(p.CodigoPergunta, ativo: true);
                     p.Prova = ObterProvas(codigoProva: p.CodigoProva).FirstOrDefault();
-                    p.Dominio = ObterDominiosPor(codigoDominio: p.CodigoDominio, codigoProva: p.CodigoProva).FirstOrDefault();
-                    p.Anotacao = ObterAnotacao(codigoUsuario: codigoUsuario, codigoPergunta: p.CodigoPergunta);
                 }
             }
             return perguntas;
@@ -381,18 +379,6 @@ namespace AwsExamExpert
             RemoverSimulado(codigoSimulado);
             trab.Complete();
         }
-
-        public void RemoverAnotacao(int? codigoAnotacao = null, int? codigoPergunta = null, int? codigoUsuario = null)
-        {
-            using var conn = new SqlConnection(ConnectionString);
-            conn.Execute("delete from Anotacao where CodigoAnotacao = ISNULL(@CodigoAnotacao,CodigoAnotacao) AND CodigoPergunta = ISNULL(@CodigoPergunta,CodigoPergunta) AND CodigoUsuario = ISNULL(@CodigoUsuario,CodigoUsuario)",
-                new
-                {
-                    @CodigoAnotacao = codigoAnotacao,
-                    @CodigoPergunta = codigoPergunta,
-                    @CodigoUsuario = codigoUsuario
-                });
-        }
         public void RemoverSimulado(int? codigoSimulado = null, int? codigoUsuario = null)
         {
             using var conn = new SqlConnection(ConnectionString);
@@ -414,12 +400,6 @@ namespace AwsExamExpert
         {
             using var conn = new SqlConnection(ConnectionString);
             return conn.ExecuteScalar<int>("select count(*) from Questao where CodigoSimulado = @CodigoSimulado;", new { @CodigoSimulado = codigoSimulado });
-        }
-
-        public List<Dominio> ObterDominiosPor(int? codigoDominio = null, int? codigoProva = null)
-        {
-            using var conn = new SqlConnection(ConnectionString);
-            return conn.Query<Dominio>("select * from Dominio where CodigoDominio = ISNULL(@CodigoDominio,CodigoDominio) AND CodigoProva = ISNULL(@CodigoProva,CodigoProva)", new { @CodigoDominio = codigoDominio, @CodigoProva = codigoProva }).ToList();
         }
 
         public List<Gabarito> GerarGabarito(List<Questao> questoes)
@@ -490,26 +470,5 @@ namespace AwsExamExpert
                     @CodigoPergunta = codigoPergunta
                 }).ToList();
         }
-
-        public void InserirAnotacao(Anotacao anotacao)
-        {
-            using var conn = new SqlConnection(ConnectionString);
-            anotacao.CodigoAnotacao = conn.ExecuteScalar<int>("INSERT Anotacao (Texto,CodigoUsuario,CodigoPergunta) VALUES (@Texto,@CodigoUsuario,@CodigoPergunta); SELECT SCOPE_IDENTITY();", anotacao);
-        }
-
-        public void EditarAnotacao(int? codigoAnotacao = null)
-        {
-            using var conn = new SqlConnection(ConnectionString);
-            conn.Execute("UPDATE Anotacao SET Texto = @Texto WHERE CodigoAnotacao = @CodigoAnotacao", new { @CodigoAnotacao = codigoAnotacao });
-        }
-
-        public List<Anotacao> ObterAnotacao(int? codigoUsuario = null, int? codigoPergunta = null)
-        {
-            using var conn = new SqlConnection(ConnectionString);
-            return conn.Query<Anotacao>("SELECT * FROM Anotacao WHERE CodigoUsuario = ISNULL(@CodigoUsuario,CodigoUsuario) AND CodigoPergunta = ISNULL(@CodigoPergunta,CodigoPergunta);", new { @CodigoUsuario = codigoUsuario, @CodigoPergunta = codigoPergunta }).ToList();
-        }
-
-
-
     }
 }
