@@ -1,8 +1,8 @@
-﻿using Dapper;
+﻿using AwsExamExpert.Models;
+using Dapper;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using AwsExamExpert.Models;
 using System;
-using System.Data.SqlClient;
 
 namespace AwsExamExpert
 {

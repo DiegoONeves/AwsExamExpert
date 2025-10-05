@@ -1,17 +1,12 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AwsExamExpert
 {
@@ -31,15 +26,6 @@ namespace AwsExamExpert
             services.AddScoped<UsuarioService>();
             services.AddScoped<LogService>();
             services.AddControllersWithViews();
-
-            services.AddAuthorization();
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(x =>
-                {
-                    x.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-                    x.LoginPath = new PathString("/Home/Login");
-                    x.AccessDeniedPath = new PathString("/Home/Login");
-                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,9 +58,6 @@ namespace AwsExamExpert
                 MinimumSameSitePolicy = SameSiteMode.Strict,
             };
             app.UseCookiePolicy(cookiePolicyOptions);
-
-            app.UseAuthorization();
-            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {

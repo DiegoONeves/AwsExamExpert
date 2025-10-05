@@ -1,5 +1,3 @@
-using System;
-
 namespace AwsExamExpert.Models
 {
     public class ErrorViewModel

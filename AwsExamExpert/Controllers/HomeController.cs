@@ -25,50 +25,6 @@ namespace AwsExamExpert.Controllers
             _service = service;
         }
 
-        public IActionResult Login()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Login(LoginViewModel login, string returnUrl)
-        {
-            if (ModelState.IsValid)
-            {
-                if (_service.VerificarAcesso(login.WhatsApp))
-                {
-                    var usuarioDoBanco = _service.ObterUsuarioPor(WhatsApp: login.WhatsApp, liberado: true).FirstOrDefault();
-
-                    if (usuarioDoBanco != null)
-                    {
-                        var claims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.Name, usuarioDoBanco.Nome),
-                            new Claim(ClaimTypes.MobilePhone, usuarioDoBanco.WhatsApp),
-                            new Claim(ClaimTypes.Role, usuarioDoBanco.Administrador? "Administrador":"Comum"),
-                            new Claim(ClaimTypes.NameIdentifier, usuarioDoBanco.CodigoUsuario.ToString())
-                        };
-
-                        var userIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                        var userPrincipal = new ClaimsPrincipal(userIdentity);
-
-                        HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal).Wait();
-                        ExibirMensagemFrontEnd(CallBackMessageType.Success, $"Bem-vindo, {usuarioDoBanco.Nome}!");
-                        return Redirect(returnUrl ?? Url.Action("Index", "Home"));
-                    }
-                }
-
-                ModelState.AddModelError("", $"Acesso não permitido, entre em contato no WhatsApp {_service.WhatsAppAdministrador}");
-            }
-            return View(login);
-        }
-        [HttpGet]
-        public IActionResult Sair()
-        {
-            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
-            //construir mecanismo que mostra usuário logado
-            return RedirectToAction("Index", "Home");
-        }
         public IActionResult Index()
         {
             return View();

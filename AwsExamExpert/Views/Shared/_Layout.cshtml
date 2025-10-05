@@ -22,14 +22,6 @@
                         <li class="nav-item">
                             <a class="nav-link text-warning" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        @if (!User.Identity.IsAuthenticated)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-warning" asp-area="" asp-controller="Home" asp-action="Login">Entrar</a>
-                            </li>
-                        }
-                        @if (User.Identity.IsAuthenticated)
-                        {
                             <li class="nav-item dropdown">
                                 <a class="nav-link text-warning dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Simulados
@@ -40,10 +32,7 @@
 
                                 </div>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-warning" asp-area="" asp-controller="Home" asp-action="Sair">Sair</a>
-                            </li>
-                        }
+                        
                     </ul>
                 </div>
             </div>

@@ -21,7 +21,6 @@ namespace AwsExamExpert.Controllers
 
         protected void GravarLogErro(string exception, string acao) 
         {
-            ModelState.AddModelError("", $"Ocorreu um erro interno, contate o administrador do sistema no WhatsApp {_service.WhatsAppAdministrador}");
             _service.GravarLogDeErro(new LogDeErro
             {
                 Erro = exception,
